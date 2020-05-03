@@ -3,7 +3,7 @@ export {getAll}
 const axios = require('axios');
 // const urljoin = require('url-join');
 const endpoints = {
-  getall: 'cards/registered'
+  getall: 'cards/list'
 }
 
 const api = axios.create({
