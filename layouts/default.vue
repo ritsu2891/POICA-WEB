@@ -48,12 +48,17 @@ export default {
   data () {
     return {
       clipped: true,
-      drawer: true,
+      drawer: false,
       items: [
         {
           icon: 'mdi-apps',
           title: 'Welcome',
           to: '/'
+        },
+        {
+          icon: 'mdi-apps',
+          title: '登録済カード一覧',
+          to: '/registered-cards'
         },
       ],
       miniVariant: false,
