@@ -33,9 +33,11 @@
       <v-spacer />
     </v-app-bar>
     <v-content>
-      <!-- <v-container> -->
-        <nuxt />
-      <!-- </v-container> -->
+      <div class="d-flex justify-center align-center" style="height: 100%">
+        <div class="pa-5" align="center">
+          <nuxt />
+      </div>
+    </div>
     </v-content>
     <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
