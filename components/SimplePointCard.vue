@@ -1,5 +1,5 @@
 <template>
-  <div id="card">
+  <div id="card" @click="clicked($event)" v-ripple>
     <div id="title">{{title}}</div>
     <div align="right"><span id="point">{{point}}</span><span id="ptlabel">pt</span></div>
   </div>
@@ -31,5 +31,10 @@ export default {
     title: String,
     point: Number,
   },
+  methods: {
+    clicked(e) {
+      this.$emit('click', e);
+    }
+  }
 }
 </script>
