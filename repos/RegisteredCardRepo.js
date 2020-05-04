@@ -1,16 +1,24 @@
-export {getAll}
+export { getAll, register }
 
-const axios = require('axios');
-// const urljoin = require('url-join');
+import { authorizedApi } from '~/repos/common.js';
+
 const endpoints = {
-  getall: 'cards/list'
+  getall: 'cards/list',
+  register: 'cards/add',
 }
 
-const api = axios.create({
-  baseURL: "http://localhost:4000",
-  timeout: 1000
-});
-
 async function getAll() {
-  return await api.get(endpoints.getall);
+  return await authorizedApi().get(endpoints.getall);
+}
+
+async function register(id, token) {
+  try {
+    const result = await authorizedApi().post(endpoints.register, {
+      id: id,
+      token: token
+    });
+    return result.data;
+  } catch (e) {
+    console.log(e);
+  }
 }
