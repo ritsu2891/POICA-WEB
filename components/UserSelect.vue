@@ -7,14 +7,13 @@
     ></v-text-field> -->
 
     <v-autocomplete
-      v-model="model"
+      v-model="acValue"
       :items="items"
       :loading="isLoading"
       :search-input.sync="search"
       label="ユーザ名"
       no-data-text="見つかりませんでした"
       prepend-icon="mdi-magnify"
-      return-object
     ></v-autocomplete>
   </div>
 </template>
@@ -25,7 +24,7 @@ const _ = require('lodash');
 export default {
   data() {
     return {
-      model: null,
+      acValue: null,
       users: [],
       isLoading: false,
       search: null,
@@ -34,9 +33,13 @@ export default {
   },
   computed: {
     items: function() {
-      return this.users.map(user => user.displayName);
+      return this.users.map(user => ({
+        text: user.displayName,
+        value: user.id
+      }));
     }
   },
+  props: ['value'],
   mounted() {
     this.lFetchUser = _.debounce(this.fetchUser, 800);
   },
@@ -51,10 +54,10 @@ export default {
   methods: {
     async fetchUser(displayName) {
       const users = await UserRepo.searchByDisplayName(displayName);
-      console.log(users);
       if (users) {
         this.users = users;
       }
+      this.$emit('input', this.acValue)
       this.isLoading = false;
     }
   }
