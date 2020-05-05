@@ -24,7 +24,7 @@ const _ = require('lodash');
 export default {
   data() {
     return {
-      acValue: null,
+      acValue: null, // AutoComplete Value
       users: [],
       isLoading: false,
       search: null,
@@ -48,6 +48,13 @@ export default {
       if (val) {
         this.isLoading = true;
         this.lFetchUser(val);
+      }
+    },
+    value(newValue) {
+      if (newValue == null) {
+        this.search = null;
+        this.users = [];
+        this.acValue = null;
       }
     }
   },
