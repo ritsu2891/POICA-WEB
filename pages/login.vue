@@ -26,8 +26,10 @@ export default {
     onGoogleLoginButtonClicked: async function() {
       this.onAuthRequesting = true;
       this.resetAuthResult();
-      this.authProviderWindow = window.open("http://localhost:4000/auth/google", "ログイン画面", "width=300,height=500,scrollbars=yes");
+      this.authProviderWindow = window.open(`http://${process.env.API_FQDN}/auth/google`, "ログイン画面", "width=300,height=500,scrollbars=yes");
+      window.addEventListener("message", this.messageArrived, false);
       await this.authResultWaitLoop();
+      window.removeEventListener("message", this.messageArrived, false);
       this.processAuthResult();
       this.authProviderWindow.close();
       this.onAuthRequesting = false;
@@ -57,6 +59,11 @@ export default {
           expires: 0
         });
       }
+    },
+    messageArrived(event) {
+      console.log('messageArrive');
+      Cookies.set('authResult', 'ok');
+      Cookies.set('accessToken', event.data);
     }
   }
 }

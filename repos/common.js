@@ -5,8 +5,8 @@ const Cookies = require('js-cookie');
 const _ = require('lodash');
 
 const baseOptions = {
-  baseURL: "http://localhost:4000",
-  timeout: 1000,
+  baseURL: `http://${process.env.API_FQDN}`,
+  timeout: 30000,
   validateStatus: function (status) {
     return status < 500;
   }
