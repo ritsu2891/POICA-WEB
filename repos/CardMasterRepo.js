@@ -1,6 +1,7 @@
-export { list, getByRegToken }
+export { list, getByRegToken, underControllCardOfUser }
 
 import { api, authorizedApi } from '~/repos/common.js';
+import Card from '~/models/Card.model.js';
 import CardMaster from '~/models/CardMaster.model.js';
 
 const Cookies = require('js-cookie');
@@ -8,7 +9,8 @@ const Cookies = require('js-cookie');
 // const urljoin = require('url-join');
 const endpoints = {
   list: 'cardmasters/list',
-  getByRegToken: 'cardmasters/byRegToken'
+  getByRegToken: 'cardmasters/byRegToken',
+  underControllCardOfUser: 'cardmasters/underControllCardOfUser',
 };
 
 async function list() {
@@ -30,6 +32,20 @@ async function getByRegToken(regToken) {
   const data = res.data;
   if (data.result == 'ok') {
     return new CardMaster(data.master);
+  } else {
+    return null;
+  }
+}
+
+async function underControllCardOfUser(userId) {
+  const res = await authorizedApi().get(endpoints.underControllCardOfUser, {
+    params: {
+      userId: userId
+    }
+  });
+  const data = res.data;
+  if (data.result == 'ok') {
+    return data.cards.map(card => new Card(card));
   } else {
     return null;
   }
