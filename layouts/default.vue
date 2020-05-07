@@ -31,19 +31,73 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title v-text="title" />
       <v-spacer />
+      <!-- ログイン・アバター -->
+      <template v-if="userFetchState != ReqState.REQUESTING">
+        <v-avatar color="primary">
+          <v-icon dark>mdi-account-circle</v-icon>
+        </v-avatar>
+        <v-btn
+          class="ml-2"
+          rounded
+          color="success"
+          style="font-weight: 700"
+          @click="loginBtnPushed"
+          v-if="!loggedIn"
+        >
+          ログイン
+        </v-btn>
+        <v-btn
+          class="ml-2"
+          rounded
+          color="error"
+          style="font-weight: 700"
+          @click="logoutBtnPushed"
+          v-if="loggedIn"
+        >
+          ログアウト
+        </v-btn>
+      </template>
+      <template v-if="userFetchState == ReqState.REQUESTING">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        ></v-progress-circular>
+      </template>
+      <!-- ///////////// -->
     </v-app-bar>
     <v-content>
-      <v-container>
+      <v-container style="height: 100%">
         <nuxt />
       </v-container>
     </v-content>
     <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+
+    <!-- スナックバー -->
+    <v-snackbar
+      v-model="snackbarShow"
+      :color="snackbar.color"
+      :timeout="snackbar.timeout"
+      bottom
+    >
+      {{ snackbar.text }}
+      <v-btn
+        dark
+        text
+        @click="snackbarShow = false"
+      >
+        閉じる
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script>
+const Cookies = require('js-cookie');
+import * as ReqState from '~/utils/APIRequestState.js';
+import * as UserRepo from '~/repos/UserRepo.js';
+
 export default {
   data () {
     return {
@@ -67,8 +121,66 @@ export default {
         }
       ],
       miniVariant: false,
-      title: 'POICA'
+      title: 'POICA',
+      loggedIn: false,
+      user: null,
+      userFetchState: ReqState.BEFORE_REQUEST,
+      ReqState: ReqState,
+      snackbarShow: false,
+      snackbar: {
+        color: 'primary',
+        text: '',
+        timeout: 5000,
+      },
     }
-  }
+  },
+  methods: {
+    loginBtnPushed() {
+      Cookies.set('RedirectURI', this.$route.path)
+      this.$router.push('/login');
+    },
+    logoutBtnPushed() {
+      Cookies.set('RedirectURI', this.$route.path)
+      this.$router.push('/logout');
+    },
+    async userFetch(showMessage) {
+      this.userFetchState = ReqState.REQUESTING;
+      const user = await UserRepo.myProfile();
+      if (user) {
+        this.loggedIn = true;
+        this.user = user;
+      } else {
+        this.loggedIn = false;
+        this.user = null;
+      }
+      this.userFetchState = ReqState.REQUEST_OK;
+    },
+    showUserAuthMessage() {
+      if (this.user) {
+        this.snackbar = {
+          color: 'success',
+          text: 'ログインしました',
+          timeout: 5000,
+        };
+        this.snackbarShow = true;
+      } else {
+        this.snackbar = {
+          color: 'info',
+          text: 'ログアウトしました',
+          timeout: 5000,
+        };
+        this.snackbarShow = true;
+      }
+    }
+  },
+  mounted() {
+    const self = this;
+    this.userFetch();
+    this.$eventHub.$on('loginStatusChange', () => {
+      self.userFetch().then(() => {
+        self.showUserAuthMessage();
+      });
+    });
+  },
 }
 </script>

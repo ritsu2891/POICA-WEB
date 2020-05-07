@@ -12,9 +12,22 @@ const baseOptions = {
   }
 };
 
-const api = () => {return axios.create(baseOptions)};
-const authorizedApi = () => {return axios.create(_.merge(baseOptions, {
-  headers: {
-    'X-POICA-Access-Token': Cookies.get('accessToken'),
+function api() {
+  return axios.create(_.merge(baseOptions, {
+    headers: {
+      'X-POICA-Access-Token': '---', //何かダミーを入れないとヘッダーがキャッシュされる？
+    }
+  })); 
+};
+function authorizedApi() {
+  if (Cookies.get('accessToken')) {
+    return axios.create(_.merge(baseOptions, {
+      headers: {
+        'X-POICA-Access-Token': Cookies.get('accessToken'),
+      }
+    })); 
+  } else {
+    return api();
   }
-}))};
+
+}
