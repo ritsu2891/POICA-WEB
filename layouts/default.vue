@@ -33,8 +33,8 @@
       <v-spacer />
       <!-- ログイン・アバター -->
       <template v-if="userFetchState != ReqState.REQUESTING">
-        <v-avatar color="primary">
-          <v-icon dark>mdi-account-circle</v-icon>
+        <v-avatar v-if="user && user.iconUrl">
+          <img :src="user.iconUrl">
         </v-avatar>
         <v-btn
           class="ml-2"
