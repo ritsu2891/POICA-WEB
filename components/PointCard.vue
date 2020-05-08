@@ -2,8 +2,8 @@
   <component
     v-if="pointCardComponentName"
     :is="pointCardComponentName"
-    :user="user"
-    :card="card"
+    :user="_user"
+    :card="_card"
     :master="master"
   ></component>
 </template>
@@ -22,13 +22,25 @@ export default {
         'b-c2': 'PointCardC2',
         'b-c3': 'PointCardC3',
       }
-      if (this.master && this.master.style) {
-        const componentNameCd = assoc[this.master.style];
-        if (componentNameCd) {
-          return componentNameCd;
-        } else {
-          return null;
-        }
+
+      const style = (this.master && this.master.style) ? this.master.style : 'b-c1';
+
+      const componentNameCd = assoc[style];
+      if (componentNameCd) {
+        return componentNameCd;
+      } else {
+        return null;
+      }
+    },
+    _user() {
+      return this.user ? this.user : {
+        displayName: '名前',
+      };
+    },
+    _card() {
+      return this.card ? this.card : {
+        description: null,
+        point: 0,
       }
     }
   }

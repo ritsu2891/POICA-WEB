@@ -26,12 +26,12 @@
           <div :style="{
             transform: `scale(2,2)`
           }">
-            <svg-filler
-              :path="master.logoUrl"
-              :fill="master.backgroundColor"
-              :width="size.logo+'px'"
-              :height="size.logo+'px'"
-            />
+            <LogoImg
+              :imgUrl="master.logoUrl"
+              :imgType="master.logoType"
+              :fillColor="master.backgroundColor"
+              :width="size.logo"
+            ></LogoImg>
           </div>
         </v-col>
         <v-col :cols="8">
@@ -104,11 +104,11 @@
 } */
 </style>
 <script>
-import SvgFiller from 'vue-svg-filler'
+import LogoImg from '~/components/LogoImg.vue';
 import BasePointCard from './BasePointCard.vue';
 
 export default {
-  components: { SvgFiller },
+  components: { LogoImg },
   extends: BasePointCard,
   data() {
     return {

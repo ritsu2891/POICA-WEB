@@ -19,12 +19,12 @@
       <!-- カード名 -->
       <div class="d-flex justify-center align-center">
         <div class="mx-4">
-          <svg-filler
-            :path="master.logoUrl"
-            :fill="master.primaryColor"
-            :width="size.logo+'px'"
-            :height="size.logo+'px'"
-          />
+          <LogoImg
+            :imgUrl="master.logoUrl"
+            :imgType="master.logoType"
+            :fillColor="master.primaryColor"
+            :width="size.logo"
+          ></LogoImg>
         </div>
         <div>
           <span
@@ -93,11 +93,11 @@
 } */
 </style>
 <script>
-import SvgFiller from 'vue-svg-filler'
+import LogoImg from '~/components/LogoImg.vue';
 import BasePointCard from './BasePointCard.vue';
 
 export default {
-  components: { SvgFiller },
+  components: { LogoImg },
   extends: BasePointCard,
   data() {
     return {
@@ -113,5 +113,13 @@ export default {
       },
     }
   },
+  mounted() {
+    console.log(this.master);
+  },
+  watch: {
+    master(m) {
+      console.log(m);
+    }
+  }
 }
 </script>
