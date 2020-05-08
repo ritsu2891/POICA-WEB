@@ -9,6 +9,7 @@ export default class CardMaster {
     // 5/5追加：リッチな表現第1段
     this.displayName = vals.displayName;
     this.logoUrl = vals.logoUrl;
+    this.logoType = vals.logoType;
     this.primaryColor = vals.primaryColor;
     this.backgroundColor = vals.backgroundColor || '#ffffff';
     this.textColor = vals.textColor || '#000000';
