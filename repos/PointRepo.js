@@ -17,13 +17,11 @@ const endpoints = {
 }
 */
 async function give(opts) {
-  console.log(opts);
   const res = await authorizedApi().post(endpoints.give, opts);
   const data = res.data;
   if (data.result == 'ok') {
     return true;
   } else {
-    console.log(data.type);
     return false;
   }
 }

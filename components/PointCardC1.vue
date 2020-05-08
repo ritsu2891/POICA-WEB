@@ -113,13 +113,5 @@ export default {
       },
     }
   },
-  mounted() {
-    console.log(this.master);
-  },
-  watch: {
-    master(m) {
-      console.log(m);
-    }
-  }
 }
 </script>

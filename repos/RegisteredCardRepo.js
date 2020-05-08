@@ -19,6 +19,5 @@ async function register(id, token) {
     });
     return result.data;
   } catch (e) {
-    console.log(e);
   }
 }
