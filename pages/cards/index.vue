@@ -20,6 +20,7 @@ import * as MasterRepo from '~/repos/CardMasterRepo.js';
 import * as UserRepo from '~/repos/UserRepo.js';
 
 export default {
+  middleware: ['auth'],
   components: {PointCard},
   data() {
     return {

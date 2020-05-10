@@ -1,8 +1,10 @@
 <template>
   <div class="d-flex justify-center align-center" style="height: 100%">
     <div class="pa-5" align="center">
+      <v-icon style="font-size: 150px;">mdi-login</v-icon>
       <h1 class="pb-2">ログインする</h1>
-      現在は<b>Googleアカウント</b>によるログインのみご利用いただけます。<br>
+      <p v-if="authRequiredMessage"><b>要求された操作を実行するために、ログインが必要です。</b></p>
+      <p>現在は<b>Googleアカウント</b>によるログインのみご利用いただけます。</p>
       <v-btn class="ma-2" tile color="primary" :loading="onAuthRequesting" @click="onGoogleLoginButtonClicked()">
         <v-icon left>mdi-google</v-icon> Googleでログイン
       </v-btn>
@@ -19,6 +21,7 @@ export default {
     return {
       authProviderWindow: null,
       onAuthRequesting: false,
+      authRequiredMessage: false,
     }
   },
   methods: {
@@ -52,6 +55,10 @@ export default {
         this.$router.push(redirectUri);
       }
     }
+  },
+  mounted() {
+    this.authRequiredMessage = Cookies.get('authRequiredMessage') ? true : false;
+    Cookies.remove('authRequiredMessage');
   }
 }
 </script>

@@ -60,6 +60,7 @@ import * as CardRepo from '~/repos/RegisteredCardRepo.js';
 import * as ReqState from '~/utils/APIRequestState.js';
 
 export default {
+  middleware: ['auth'],
   components: {PointCard},
   layout: 'hvCenter',
   data() {

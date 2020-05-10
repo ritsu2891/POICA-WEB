@@ -155,6 +155,7 @@ import CardSelect from '~/components/CardSelect.vue';
 import ColorPickField from '~/components/ColorPickField.vue';
 
 export default {
+  middleware: ['auth'],
   components: {PointCard, UserSelect, CardSelect, ColorPickField},
   data() {
     return {
@@ -242,10 +243,12 @@ export default {
   methods: {
     fetchMasters() {
       MasterRepo.list().then(res => {
-        this.masters = res;
-        this.masters.forEach((master) => {
-          this.showMenu[`m${master.id}`] = false;
-        })
+        if (res) {
+          this.masters = res;
+          this.masters.forEach((master) => {
+            this.showMenu[`m${master.id}`] = false;
+          });
+        }
       });
     },
     showPointIssueWindow() {
