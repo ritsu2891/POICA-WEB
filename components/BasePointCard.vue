@@ -16,15 +16,15 @@ export default {
   },
   computed: {
     cardWidth() {
-      if (this.cardEl) {
-        return this.cardEl.clientWidth;
+      if (this.$el) {
+        return this.$el.clientWidth;
       } else {
         return 0;
       }
     },
     cardHeight() {
-      if (this.cardEl) {
-        return this.cardEl.clientHeight;
+      if (this.$el) {
+        return this.$el.clientHeight;
       } else {
         return 0;
       }
@@ -37,15 +37,11 @@ export default {
     }
   },
   mounted() {
-    this.cardEl = this.$el;
-    this._cardSizeChanged();
-    elementResizeEvent(this.$el, this._cardSizeChanged);
+    const self = this;
+    self.lUpdateSize();
+    elementResizeEvent(this.$el.parentNode, () => {self.lUpdateSize()});
   },
   methods: {
-    _cardSizeChanged() {
-      this.cardEl = null;
-      this.cardEl = this.$el;
-    },
     updateSize() {
       // if (!this.size) {
       //   return;
@@ -66,16 +62,9 @@ export default {
       //   }
       // });
       // this.size = newSize;
-      this.width = this.cardWidth;
+      this.width = this.$el.clientWidth;
+      // this.width = this.cardWidth;
     }
   },
-  watch: {
-    cardWidth() {
-      this.lUpdateSize();
-    },
-    // cardHeight() {
-    //   this.lUpdateSize();
-    // }
-  }
 }
 </script>

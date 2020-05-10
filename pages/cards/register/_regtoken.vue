@@ -38,8 +38,8 @@
           カードを追加しました
         </p>
         <p v-if="!master.canUserRegister()">このカードは追加できません</p>
-        <simple-point-card class="my-3 elevation-5" :title="master.style + ''" :point="0" style="width: 350px;">
-        </simple-point-card>
+        <PointCard class="my-3 elevation-5" :master="master" :user="user" style="width: 350px;">
+        </PointCard>
         <v-btn
           :disabled="!master.canUserRegister() || cardRegisterState == ReqState.REQUEST_OK"
           :loading="cardRegisterState == ReqState.REQUESTING"
@@ -53,13 +53,14 @@
   </div>
 </template>
 <script>
-import SimplePointCard from '~/components/SimplePointCard.vue';
+import PointCard from '~/components/PointCard.vue';
+import * as UserRepo from '~/repos/UserRepo.js';
 import * as MasterRepo from '~/repos/CardMasterRepo.js';
 import * as CardRepo from '~/repos/RegisteredCardRepo.js';
 import * as ReqState from '~/utils/APIRequestState.js';
 
 export default {
-  components: {SimplePointCard},
+  components: {PointCard},
   layout: 'hvCenter',
   data() {
     return {
@@ -67,8 +68,9 @@ export default {
       masterLoadState: ReqState.BEFORE_REQUEST,
       cardRegisterState: ReqState.BEFORE_REQUEST,
       addingCard: false,
-      master: {style: 0},
+      master: null,
       regToken: '',
+      user: null,
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -79,6 +81,7 @@ export default {
   },
   methods: {
     async fetchCardMaster() {
+      this.user = await UserRepo.myProfile();
       const master = await MasterRepo.getByRegToken(this.regToken);
       if (master) {
         this.master = master;

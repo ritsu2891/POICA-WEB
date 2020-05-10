@@ -1,4 +1,4 @@
-export { list, add, getByRegToken, underControllCardOfUser, availableCardStyles }
+export { list, add, getById, getByRegToken, underControllCardOfUser, availableCardStyles }
 
 import { api, authorizedApi } from '~/repos/common.js';
 import Card from '~/models/Card.model.js';
@@ -10,6 +10,7 @@ const Cookies = require('js-cookie');
 const endpoints = {
   add: 'cardmasters/add',
   list: 'cardmasters/list',
+  getById: 'cardmasters/byId',
   getByRegToken: 'cardmasters/byRegToken',
   underControllCardOfUser: 'cardmasters/underControllCardOfUser',
 };
@@ -38,6 +39,20 @@ async function add(opts) {
   const headers = { "content-type": "multipart/form-data" };
   const res = await authorizedApi().post(endpoints.add, formData, headers);
   return res.data;
+}
+
+async function getById(id) {
+  const res = await api().get(endpoints.getById, {
+    params: {
+      id: id
+    }
+  });
+  const data = res.data;
+  if (data.result == 'ok') {
+    return new CardMaster(data.master);
+  } else {
+    return null;
+  }
 }
 
 async function getByRegToken(regToken) {

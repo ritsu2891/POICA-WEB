@@ -64,7 +64,7 @@ export default {
       if (users) {
         this.users = users;
       }
-      this.$emit('input', this.acValue)
+      this.$emit('input', _.find(users, { id: this.acValue }));
       this.isLoading = false;
     }
   }

@@ -2,18 +2,19 @@
   <div>
     <v-row>
       <v-col cols="12" sm="6" lg="4" v-for="card in cards" :key="card.id">
-        <div class="CardWrapper">
-          <SimplePointCard
-            :title="`Card#${card.id}`"
-            :point="card.point"
-            :class="{
-              'CardWrapper--select': selectingCardId == card.id,
-              'CardWrapper--notselect': selectingCardId != card.id,
-              'elevation-2': true
-            }"
-            @click="changeSelect(card.id)"
+        <div class="CardWrapper" @click="changeSelect(card.id)"
+          :class="{
+            'CardWrapper--select': selectingCardId == card.id,
+            'CardWrapper--notselect': selectingCardId != card.id,
+            'elevation-2': true
+          }"
+        >
+          <PointCard
+            :card="card"
+            :master="masters[card.masterId]"
+            :user="user"
           >
-          </SimplePointCard>
+          </PointCard>
           <div class="SelectIcon elevation-3 d-flex justify-center align-center" v-if="selectingCardId == card.id">
             <span><v-icon>mdi-check-bold</v-icon></span>
           </div>
@@ -48,16 +49,16 @@
 </style>
 <script>
 import Card from '~/models/Card.model.js';
-import SimplePointCard from '~/components/SimplePointCard.vue';
+import PointCard from '~/components/PointCard.vue';
 
 export default {
-  components: { SimplePointCard },
+  components: { PointCard },
   data() {
     return {
       selectingCardId: 0,
     }
   },
-  props: ['cards', 'value'],
+  props: ['cards', 'masters', 'user', 'value'],
   methods: {
     changeSelect(id) {
       this.selectingCardId = id;

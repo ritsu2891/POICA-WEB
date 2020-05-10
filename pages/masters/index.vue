@@ -9,13 +9,15 @@
           offset-y
         >
           <template v-slot:activator="menuClickCb">
-            <SimplePointCard
-              :title="master.id + ''"
-              :point="1"
-              class="card elevation-2"
+            <div
               v-on="menuClickCb.on"
               @click="masterClicked(master.id)"
-            ></SimplePointCard>
+            >
+              <PointCard
+                :master="master"
+                class="elevation-2"
+              ></PointCard>
+            </div>
           </template>
 
           <v-list>
@@ -33,10 +35,10 @@
     <v-dialog v-model="pointIssueWindow" width="800">
       <div class="modal">
         <h1>ポイント付与</h1>
-          <UserSelect v-model="targetUserId"></UserSelect>
-          <CardSelect v-model="opTgCardId" :cards="filteredOpCdCards"></CardSelect>
-          <p v-if="targetUserId == null" align="center">ユーザを選択してください</p>
-          <p v-if="targetUserId != null && filteredOpCdCards.length == 0" align="center">選択できるカードがありません</p>
+          <UserSelect v-model="targetUser"></UserSelect>
+          <CardSelect v-model="opTgCardId" :user="targetUser" :masters="opTgMaster" :cards="filteredOpCdCards"></CardSelect>
+          <p v-if="targetUser == null" align="center">ユーザを選択してください</p>
+          <p v-if="targetUser != null && filteredOpCdCards.length == 0" align="center">選択できるカードがありません</p>
         <v-form v-model="pointIssueFormValid">
           <v-text-field
             label="付与量"
@@ -132,30 +134,27 @@
   </div>
 </template>
 <style scoped>
-.card {
-  border-radius: 30px;
-  height: 250px;
-  /* width: 350px; */
-}
 .modal {
   background: white;
   padding: 15px;
 }
 </style>
 <script>
-import SimplePointCard from '~/components/SimplePointCard.vue';
 import PointCard from '~/components/PointCard.vue';
 import * as MasterRepo from '~/repos/CardMasterRepo.js';
 import * as PointRepo from '~/repos/PointRepo.js';
+import * as UserRepo from '~/repos/UserRepo.js';
 import CardMaster from '~/models/CardMaster.model.js';
 import UserSelect from '~/components/UserSelect.vue';
 import CardSelect from '~/components/CardSelect.vue';
 import ColorPickField from '~/components/ColorPickField.vue';
 
 export default {
-  components: {PointCard, SimplePointCard, UserSelect, CardSelect, ColorPickField},
+  components: {PointCard, UserSelect, CardSelect, ColorPickField},
   data() {
     return {
+      masters: [],
+
       showMenu: [],
       pointIssueWindow: false,
       masterAddWindow: false,
@@ -167,11 +166,12 @@ export default {
       masterAddResult: null,
 
       //ポイント発行
-      targetUserId: null,
+      targetUser: null,
+      opTgUser: null,
       opCdCards: [],
       opTgCardId: null,
-      masters: [],
       opTgMasterId: null,
+      opTgMaster: null,
       opPointAmount: null,
 
       //マスタ作成
@@ -230,8 +230,8 @@ export default {
     })
   },
   watch: {
-    targetUserId: function(newTargetUserId) {
-      this.loadCards(newTargetUserId);
+    targetUser: function(newTargetUser) {
+      this.loadCards(newTargetUser);
     },
   },
   methods: {
@@ -244,7 +244,10 @@ export default {
       });
     },
     showPointIssueWindow() {
-      this.targetUserId = null;
+      this.masters.forEach((master) => {
+        this.showMenu[`m${master.id}`] = false;
+      })
+      this.targetUser = null;
       this.opCdCards = [];
       this.opTgCardId = null;
       this.pointIssueWindow = true;
@@ -268,14 +271,19 @@ export default {
     masterClicked(masterId) {
       this.opTgMasterId = masterId;
     },
-    loadCards(targetUserId) {
+    async loadCards(targetUser) {
       const self = this;
-      if (targetUserId) {
-        MasterRepo.underControllCardOfUser(targetUserId).then(cards => {
-          self.opCdCards = cards;
-        });
+      this.opTgCardId = null;
+      if (targetUser) {
+        const cards = await MasterRepo.underControllCardOfUser(targetUser.id);
+        const masters = {};
+        masters[self.opTgMasterId] = await MasterRepo.getById(self.opTgMasterId);
+
+        self.opCdCards = cards;
+        self.opTgMaster = masters;
+      } else {
+        self.opCdCards = [];
       }
-      self.opCdCards = [];
     },
     submitPointIssue() {
       if (this.canExecPointIssue) {
@@ -289,7 +297,7 @@ export default {
         const self = this;
         PointRepo.give(opt).then(res => {
           self.pointIssueResult = res;
-          self.loadCards(self.targetUserId);
+          self.loadCards(self.targetUser);
         });
       }
     },
