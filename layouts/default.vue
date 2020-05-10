@@ -112,7 +112,7 @@ export default {
         {
           icon: 'mdi-apps',
           title: '利用しているカード',
-          to: '/registered-cards'
+          to: '/cards'
         },
         {
           icon: 'mdi-apps',

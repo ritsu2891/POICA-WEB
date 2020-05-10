@@ -62,6 +62,11 @@ export default {
           title: '登録済カード一覧',
           to: '/registered-cards'
         },
+        {
+          icon: 'mdi-apps',
+          title: '管理しているカード',
+          to: '/masters'
+        }
       ],
       miniVariant: false,
       title: 'POICA'
