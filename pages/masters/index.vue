@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div style="height: 100%;" class="d-flex flex-column">
     <h1>管理しているカード一覧</h1>
-    <v-row>
+    <v-row v-if="masters.length > 0">
       <v-col cols="12" sm="6" lg="4" v-for="(master, id) in masters" :key="id">
         <v-menu
           v-model="showMenu[`m${master.id}`]"
@@ -30,6 +30,11 @@
         </v-menu>
       </v-col>
     </v-row>
+    <div v-if="masters.length == 0" class="d-flex align-center justify-center flex-column flex-grow-1">
+        <v-icon style="font-size: 150px;">mdi-credit-card-scan</v-icon>
+        <div style="font-size: 30px; font-weight: 700;">管理しているカードなし</div>
+        <p>右下の「+」ボタンで作成してください</p>
+    </div>
 
     <!-- ポイント発行ウィンドウ -->
     <v-dialog v-model="pointIssueWindow" width="800">
