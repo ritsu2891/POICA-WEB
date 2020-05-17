@@ -26,6 +26,11 @@
                 ポイント付与
               </v-list-item-title>
             </v-list-item>
+            <v-list-item @click="shareRegCardLinkBtnClicked()">
+              <v-list-item-title>
+                カード登録用リンクをシェア
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-col>
@@ -60,6 +65,14 @@
         </div>
       </div>
     </v-dialog>
+
+    <!-- カード登録リンクシェア用シート -->
+    <social-share
+      v-model="socialShareSheet"
+      :showMessage="socialShareShowMessage"
+      :shareMessage="socialShareMessage"
+      :url="socialShareUrl"
+    ></social-share>
 
     <!-- マスタ新規作成ウィンドウ -->
     <v-dialog v-model="masterAddWindow" width="800">
@@ -145,6 +158,8 @@
 }
 </style>
 <script>
+const _ = require('lodash');
+
 import PointCard from '~/components/PointCard.vue';
 import * as MasterRepo from '~/repos/CardMasterRepo.js';
 import * as PointRepo from '~/repos/PointRepo.js';
@@ -153,10 +168,11 @@ import CardMaster from '~/models/CardMaster.model.js';
 import UserSelect from '~/components/UserSelect.vue';
 import CardSelect from '~/components/CardSelect.vue';
 import ColorPickField from '~/components/ColorPickField.vue';
+import SocialShare from '~/components/SocialShare.vue';
 
 export default {
   middleware: ['auth'],
-  components: {PointCard, UserSelect, CardSelect, ColorPickField},
+  components: {PointCard, UserSelect, CardSelect, ColorPickField, SocialShare},
   data() {
     return {
       masters: [],
@@ -179,6 +195,12 @@ export default {
       opTgMasterId: null,
       opTgMaster: null,
       opPointAmount: null,
+
+      //カード登録リンクシェア
+      socialShareSheet: false,
+      socialShareShowMessage: '',
+      socialShareMessage: '',
+      socialShareUrl: '',
 
       //マスタ作成
       cardStyles: MasterRepo.availableCardStyles,
@@ -259,6 +281,17 @@ export default {
       this.opCdCards = [];
       this.opTgCardId = null;
       this.pointIssueWindow = true;
+    },
+    async shareRegCardLinkBtnClicked() {
+      const masterCds = (_.filter(this.masters, {'id': this.opTgMasterId}));
+      if (masterCds.length < 1) return;
+      const master = masterCds[0];
+
+      this.socialShareShowMessage = `"${master.displayName}"の登録用リンクをシェアする`;
+      this.socialShareMessage = `POICAで"${master.displayName}"を登録`;
+      this.socialShareUrl = `${process.env.SELF_URL}/cards/register/${master.regToken}`;
+
+      this.socialShareSheet = true;
     },
     showAddMasterWindow() {
       const self = this;
