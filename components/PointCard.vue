@@ -5,6 +5,7 @@
     :user="_user"
     :card="_card"
     :master="master"
+    :fitHeight="_fitHeight"
   ></component>
 </template>
 <script>
@@ -14,7 +15,7 @@ import PointCardC3 from '~/components/PointCardC3.vue';
 
 export default {
   components: {PointCardC1, PointCardC2, PointCardC3},
-  props: ['user', 'card', 'master'],
+  props: ['user', 'card', 'master', 'fitHeight'],
   computed: {
     pointCardComponentName() {
       const assoc = {
@@ -31,6 +32,9 @@ export default {
       } else {
         return null;
       }
+    },
+    _fitHeight() {
+      return this.fitHeight;
     },
     _user() {
       return this.user ? this.user : {

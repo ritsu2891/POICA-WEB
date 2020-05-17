@@ -1,7 +1,7 @@
 <template>
   <div
     :style="{
-      height: `${originalHeight * (width/originalWidth)}px`
+      height: `${height}px`
     }"
     v-ripple
   >
@@ -12,7 +12,7 @@
         color: master.textColor,
         width: originalWidth+'px',
         height: originalHeight+'px',
-        transform: `translate(${(width-originalWidth)/2}px, ${originalHeight * (cardSizeRatio - 1) / 2}px) scale(${cardSizeRatio}, ${cardSizeRatio}) `,
+        transform: `translate(${(width-originalWidth)/2}px, ${(height-originalHeight)/2}px) scale(${cardSizeRatio}, ${cardSizeRatio}) `,
         // border: 'solid 1px red'
         overflow: 'hidden',
       }"

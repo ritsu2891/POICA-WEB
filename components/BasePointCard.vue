@@ -6,11 +6,12 @@
 const elementResizeEvent = require('element-resize-event');
 
 export default {
-  props: ['user', 'card', 'master'],
+  props: ['user', 'card', 'master', 'fitHeight'],
   data() {
     return {
       cardEl: null,
       width: 0,
+      height: 0,
       lUpdateSize: _.debounce(this.updateSize, 100),
     }
   },
@@ -29,12 +30,9 @@ export default {
         return 0;
       }
     },
-    height() {
-      return this.originalHeight * this.cardSizeRatio;
-    },
     cardSizeRatio() {
-      return this.width / this.originalWidth;
-    }
+      return this.fitHeight ? this.height/this.originalHeight : this.width/this.originalWidth;
+    },
   },
   mounted() {
     const self = this;
@@ -63,7 +61,8 @@ export default {
       // });
       // this.size = newSize;
       this.width = this.$el.clientWidth;
-      // this.width = this.cardWidth;
+      console.log(this.$el.parentNode.clientHeight);
+      this.height = this.fitHeight ? this.$el.parentNode.clientHeight : this.originalHeight * this.cardSizeRatio;
     }
   },
 }
