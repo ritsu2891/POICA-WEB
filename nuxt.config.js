@@ -1,5 +1,8 @@
 import colors from 'vuetify/es5/util/colors';
 
+const appName = 'POICA(α)';
+const appUrl = 'http://localhost:3000';
+
 export default {
   mode: 'universal',
   /*
@@ -11,6 +14,15 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: `${appName}はオリジナルの電子ポイントカードを作成できるサービスです` },
+      { hid: 'og:site_name', property: 'og:site_name', content: appName },
+      { hid: 'og:type', property: 'og:type', content: 'article' },
+      { hid: 'og:url', property: 'og:url', content: appUrl },
+      { hid: 'og:title', property: 'og:title', content: appName },
+      { hid: 'og:description', property: 'og:description', content: `${appName}はオリジナルの電子ポイントカードを作成できるサービスです` },
+      { hid: 'og:image', property: 'og:image', content: `${appUrl}/ogp-common.jpg` },
+      { hid: 'twitter:card', property: 'twitter:card', content: 'summary' },
+      { hid: 'fb:app_id', property: 'fb:app_id', content: process.env.FB_APP_ID },
     ],
   },
   /*

@@ -3,6 +3,7 @@
   </div>
 </template>
 <script>
+const _ = require('lodash');
 const elementResizeEvent = require('element-resize-event');
 
 export default {
