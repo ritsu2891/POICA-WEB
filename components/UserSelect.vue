@@ -18,7 +18,6 @@
   </div>
 </template>
 <script>
-import * as UserRepo from '~/repos/UserRepo.js';
 const _ = require('lodash');
 
 export default {
@@ -60,7 +59,7 @@ export default {
   },
   methods: {
     async fetchUser(displayName) {
-      const users = await UserRepo.searchByDisplayName(displayName);
+      const users = await this.$userRepo.searchByDisplayName(displayName);
       if (users) {
         this.users = users;
       }

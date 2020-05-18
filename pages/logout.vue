@@ -2,8 +2,6 @@
   <div></div>
 </template>
 <script>
-const Cookies = require('js-cookie');
-
 export default {
   beforeRouteEnter(to, from, next) {
     next(self => {
@@ -11,10 +9,10 @@ export default {
       // TODO:mixinでログインページと共通化 
       const authRelatedCookieKey = ['authResult', 'accessToken'];
       for (const key of authRelatedCookieKey) {
-        Cookies.remove(key);
+        self.$cookies.remove(key);
       }
 
-      const redirectUri = Cookies.get('RedirectURI');
+      const redirectUri = self.$cookies.get('RedirectURI');
       if (redirectUri) {
         self.$router.push(redirectUri);
       }

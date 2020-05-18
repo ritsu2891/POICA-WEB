@@ -15,9 +15,6 @@
 </template>
 <script>
 import PointCard from '~/components/PointCard.vue';
-import * as RegisterCardRepo from '~/repos/RegisteredCardRepo.js';
-import * as MasterRepo from '~/repos/CardMasterRepo.js';
-import * as UserRepo from '~/repos/UserRepo.js';
 
 export default {
   middleware: ['auth'],
@@ -32,12 +29,12 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(self => {
       (async function() {
-        let res = await RegisterCardRepo.getAll();
+        let res = await self.$cardRepo.getAll();
         const cards = res.data.cards;
         const masterIds = Array.from(new Set(cards.map(c => c.masterId)));
-        const masterFetchPromises = masterIds.map(id => MasterRepo.getById(id));
+        const masterFetchPromises = masterIds.map(id => self.$cardMasterRepo.getById(id));
         const masters = await Promise.all(masterFetchPromises);
-        const user = await UserRepo.myProfile();
+        const user = await self.$userRepo.myProfile();
         self.cards = cards;
         self.masters = Object.fromEntries(masters.map(m => [m.id, m]));
         self.user = user;

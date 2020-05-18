@@ -161,9 +161,6 @@
 const _ = require('lodash');
 
 import PointCard from '~/components/PointCard.vue';
-import * as MasterRepo from '~/repos/CardMasterRepo.js';
-import * as PointRepo from '~/repos/PointRepo.js';
-import * as UserRepo from '~/repos/UserRepo.js';
 import CardMaster from '~/models/CardMaster.model.js';
 import UserSelect from '~/components/UserSelect.vue';
 import CardSelect from '~/components/CardSelect.vue';
@@ -203,8 +200,8 @@ export default {
       socialShareUrl: '',
 
       //マスタ作成
-      cardStyles: MasterRepo.availableCardStyles,
-      newMasterStyle: MasterRepo.availableCardStyles[2],
+      cardStyles: this.$cardMasterRepo.availableCardStyles,
+      newMasterStyle: this.$cardMasterRepo.availableCardStyles[2],
       newMasterDisplayName: 'ポイントカード',
       newMasterLogo: null,
       newMasterPrimaryColor: '#ff0000',
@@ -264,7 +261,7 @@ export default {
   },
   methods: {
     fetchMasters() {
-      MasterRepo.list().then(res => {
+      this.$cardMasterRepo.list().then(res => {
         if (res) {
           this.masters = res;
           this.masters.forEach((master) => {
@@ -296,7 +293,7 @@ export default {
     showAddMasterWindow() {
       const self = this;
       this.masterAddWindow = true;
-      this.newMasterStyle = MasterRepo.availableCardStyles[0];
+      this.newMasterStyle = this.$cardMasterRepo.availableCardStyles[0];
       this.newMasterDisplayName = 'ポイントカード';
       this.newMasterLogo = null;
       this.newMasterPrimaryColor = '#ff0000';
@@ -306,7 +303,7 @@ export default {
       this.newMasterRegByUrl = true;
       this.masterAddResult = null;
       requestAnimationFrame(function () {
-        self.newMasterStyle = MasterRepo.availableCardStyles[2];
+        self.newMasterStyle = this.$cardMasterRepo.availableCardStyles[2];
       });
     },
     masterClicked(masterId) {
@@ -316,9 +313,9 @@ export default {
       const self = this;
       this.opTgCardId = null;
       if (targetUser) {
-        const cards = await MasterRepo.underControllCardOfUser(targetUser.id);
+        const cards = await this.$cardMasterRepo.underControllCardOfUser(targetUser.id);
         const masters = {};
-        masters[self.opTgMasterId] = await MasterRepo.getById(self.opTgMasterId);
+        masters[self.opTgMasterId] = await this.$cardMasterRepo.getById(self.opTgMasterId);
 
         self.opCdCards = cards;
         self.opTgMaster = masters;
@@ -336,7 +333,7 @@ export default {
           value: this.opPointAmount
         };
         const self = this;
-        PointRepo.give(opt).then(res => {
+        this.$pointRepo.give(opt).then(res => {
           self.pointIssueResult = res;
           self.loadCards(self.targetUser);
         });
@@ -356,7 +353,7 @@ export default {
           showInList: this.newMasterShowInList,
           regByURL: this.newMasterRegByUrl,
         };
-        MasterRepo.add(opts).then(res => {
+        this.$cardMasterRepo.add(opts).then(res => {
           self.masterAddResult = res.result == 'ok';
           if (self.masterAddResult) {
             self.fetchMasters();

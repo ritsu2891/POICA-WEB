@@ -13,7 +13,6 @@
 </template>
 <script>
 const axios = require('axios');
-const Cookies = require('js-cookie');
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 
 export default {
@@ -34,7 +33,7 @@ export default {
     resetAuthResult() {
       const authRelatedCookieKey = ['authResult', 'accessToken'];
       for (const key of authRelatedCookieKey) {
-        Cookies.remove(key);
+        this.$cookies.remove(key);
       }
     },
     messageArrived(event) {
@@ -45,20 +44,20 @@ export default {
       this.authProviderWindow.close();
       this.onAuthRequesting = false;
 
-      Cookies.set('authResult', 'ok');
-      Cookies.set('accessToken', event.data);
+      this.$cookies.set('authResult', 'ok');
+      this.$cookies.set('accessToken', event.data);
 
       this.$eventHub.$emit('loginStatusChange');
 
-      const redirectUri = Cookies.get('RedirectURI');
+      const redirectUri = this.$cookies.get('RedirectURI');
       if (redirectUri) {
         this.$router.push(redirectUri);
       }
     }
   },
   mounted() {
-    this.authRequiredMessage = Cookies.get('authRequiredMessage') ? true : false;
-    Cookies.remove('authRequiredMessage');
+    this.authRequiredMessage = this.$cookies.get('authRequiredMessage') ? true : false;
+    this.$cookies.remove('authRequiredMessage');
   }
 }
 </script>

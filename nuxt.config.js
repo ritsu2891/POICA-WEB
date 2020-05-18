@@ -1,7 +1,7 @@
 import colors from 'vuetify/es5/util/colors';
 
 export default {
-  mode: 'spa',
+  mode: 'universal',
   /*
   ** Headers of the page
   */
@@ -11,7 +11,6 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
   },
   /*
@@ -27,7 +26,13 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    { src: '@/plugins/EventHub.js' }
+    { src: '@/plugins/EventHub.js' },
+    { src: '@/plugins/AxiosInstance.js' },
+    { src: '@/plugins/Auth.js' },
+    { src: '@/plugins/repos/UserRepo.js' },
+    { src: '@/plugins/repos/CardRepo.js' },
+    { src: '@/plugins/repos/CardMasterRepo.js' },
+    { src: '@/plugins/repos/PointRepo.js' },
   ],
   /*
   ** Nuxt.js dev-modules
@@ -44,6 +49,7 @@ export default {
     '@nuxtjs/pwa',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
+    'cookie-universal-nuxt',
   ],
   /*
   ** Axios module configuration

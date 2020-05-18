@@ -94,9 +94,7 @@
 </template>
 
 <script>
-const Cookies = require('js-cookie');
 import * as ReqState from '~/utils/APIRequestState.js';
-import * as UserRepo from '~/repos/UserRepo.js';
 
 export default {
   data () {
@@ -136,16 +134,17 @@ export default {
   },
   methods: {
     loginBtnPushed() {
-      Cookies.set('RedirectURI', this.$route.path)
+      this.$cookies.set('RedirectURI', this.$route.path)
       this.$router.push('/login');
     },
     logoutBtnPushed() {
-      Cookies.set('RedirectURI', this.$route.path)
+      this.$cookies.set('RedirectURI', this.$route.path)
       this.$router.push('/logout');
     },
     async userFetch(showMessage) {
       this.userFetchState = ReqState.REQUESTING;
-      const user = await UserRepo.myProfile();
+      console.log(this.$userRepo);
+      const user = await this.$userRepo.myProfile();
       if (user) {
         this.loggedIn = true;
         this.user = user;

@@ -1,7 +1,4 @@
-export { api, authorizedApi }
-
 const axios = require('axios');
-const Cookies = require('js-cookie');
 const _ = require('lodash');
 
 const baseOptions = {
@@ -15,19 +12,30 @@ const baseOptions = {
 function api() {
   return axios.create(_.merge(baseOptions, {
     headers: {
-      'X-POICA-Access-Token': '---', //何かダミーを入れないとヘッダーがキャッシュされる？
+      //何かダミーを入れないとヘッダーがキャッシュされる？
+      'X-POICA-Access-Token': '---',
     }
   })); 
 };
-function authorizedApi() {
-  if (Cookies.get('accessToken')) {
+
+function authorizedApi(accessToken) {
+  if (accessToken) {
     return axios.create(_.merge(baseOptions, {
       headers: {
-        'X-POICA-Access-Token': Cookies.get('accessToken'),
+        'X-POICA-Access-Token': accessToken,
       }
     })); 
   } else {
     return api();
   }
+}
 
+export default ({ app }, inject) => {
+  inject('api', () => {
+    return api();
+  });
+
+  inject('authorizedApi', () => {
+    return authorizedApi(app.$cookies.get('accessToken'));
+  });
 }
