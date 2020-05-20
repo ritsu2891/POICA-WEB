@@ -33,7 +33,7 @@
       <v-spacer />
       <!-- ログイン・アバター -->
       <template v-if="userFetchState != ReqState.REQUESTING">
-        <v-avatar v-if="user && user.iconUrl">
+        <v-avatar v-if="user && user.iconUrl" v-ripple @click="userProfileModalShow=true">
           <img :src="user.iconUrl">
         </v-avatar>
         <v-btn
@@ -73,6 +73,58 @@
     <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+
+    <!-- ユーザプロフィールモーダル -->
+    <v-dialog v-model="userProfileModalShow" width="500">
+      <div style="background: white; padding: 15px;">
+        <h1>プロフィール</h1>
+        <v-alert type="info">
+          プロフィール画像はGoogleのものを用いています。将来的にはこのサービス用の画像を別途指定できるようにする予定です。
+        </v-alert>
+
+        <div class="d-flex align-center">
+          <v-avatar size="100" v-if="user && user.iconUrl" class="ma-3">
+            <img :src="user.iconUrl">
+          </v-avatar>
+
+          <v-form v-model="userProfileValidate" class="flex-grow-1">
+            <v-text-field
+              label="ユーザID"
+              v-model="inputUserId"
+              :rules="[
+                userProfileFieldRules.notEmpty,
+                userProfileFieldRules.length,
+                userProfileFieldRules.idCharType,
+              ]"
+            ></v-text-field>
+            <v-text-field
+              label="表示名"
+              v-model="inputUserName"
+              :rules="[
+                userProfileFieldRules.notEmpty,
+                userProfileFieldRules.length,
+              ]"
+            ></v-text-field>
+          </v-form>
+        </div>
+        
+        <div align="right" v-if="userProfileRenewState == ReqState.REQUEST_OK">更新しました</div>
+        <div align="right" v-if="userProfileRenewState == ReqState.REQUEST_FAILURE">更新できませんでした</div>
+        <div align="right">
+          <v-btn color="error" @click="userProfileModalShow = false">
+            キャンセル
+          </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="!userProfileValidate"
+            :loading="userProfileRenewState == ReqState.REQUESTING"
+            @click="renewUserProfile"
+          >
+            保存
+          </v-btn>
+        </div>
+      </div>
+    </v-dialog>
 
     <!-- スナックバー -->
     <v-snackbar
@@ -130,6 +182,18 @@ export default {
         text: '',
         timeout: 5000,
       },
+
+      // ユーザプロフィール変更
+      userProfileValidate: null,
+      userProfileModalShow: false,
+      inputUserId: null,
+      inputUserName: null,
+      userProfileFieldRules: {
+        idCharType: val => /^\w+$/.test(val) || '英数字およびアンダーライン(_)のみ利用可能です',
+        length: val => (typeof(val) == 'string' && val.length > 0 && val.length <= 30) || '1〜30字で指定してください',
+        notEmpty: val => !!val,
+      },
+      userProfileRenewState: ReqState.BEFORE_REQUEST,
     }
   },
   methods: {
@@ -153,6 +217,18 @@ export default {
         this.user = null;
       }
       this.userFetchState = ReqState.REQUEST_OK;
+    },
+    async renewUserProfile() {
+      this.userProfileRenewState = ReqState.REQUESTING;
+      const updateRes = await this.$userRepo.updateMyProfile({
+        userId: this.inputUserId,
+        displayName: this.inputUserName,
+      });
+      if (updateRes) {
+        this.userProfileRenewState = ReqState.REQUEST_OK;
+      } else {
+        this.userProfileRenewState = ReqState.REQUEST_FAILURE;
+      }
     },
     showUserAuthMessage() {
       if (this.user) {
@@ -181,5 +257,16 @@ export default {
       });
     });
   },
+  watch: {
+    userProfileModalShow(show) {
+      if (show) {
+        this.userProfileRenewState = ReqState.BEFORE_REQUEST;
+      }
+    },
+    user(newUser) {
+      this.inputUserId = newUser.userId;
+      this.inputUserName = newUser.displayName;
+    }
+  }
 }
 </script>
