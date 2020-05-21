@@ -3,9 +3,48 @@
     <h1>登録済カード一覧</h1>
     <v-row v-if="cards.length > 0">
       <v-col cols="12" sm="6" lg="4" v-for="card in cards" :key="card.id">
-        <PointCard :card="card" :master="masters[card.masterId]" :user="user" class="elevation-2"></PointCard>
+        <div @click="e => onCardClick(e, card)">
+          <PointCard
+            :card="card"
+            :master="masters[card.masterId]"
+            :user="user"
+            class="elevation-2"
+          ></PointCard>
+        </div>
       </v-col>
     </v-row>
+
+    <!-- カードクリックメニュー -->
+    <v-menu
+      v-model="showCardClickMenu"
+      :position-x="cardClickMenuX"
+      :position-y="cardClickMenuY"
+      absolute
+      offset-y
+    >
+      <div>
+        <v-list>
+          <v-list-item @click="onReceivePointClick">
+            <v-list-item-title>
+              ポイントを受け取る
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </div>
+    </v-menu>
+
+    <!-- QR表示モーダル -->
+    <v-dialog :width="500" v-model="qrShow">
+      <div style="background: white; ">
+        <QRCode :value="qrData" style="width: 100%"></QRCode>
+        <div style="padding: 15px;">
+          <v-alert type="info" v-if="qrHelpText" border="left" colored-border>
+            {{qrHelpText}}
+          </v-alert>
+        </div>
+      </div>
+    </v-dialog>
+
     <div v-if="cards.length == 0" class="d-flex align-center justify-center flex-column flex-grow-1">
         <v-icon style="font-size: 150px;">mdi-credit-card-scan</v-icon>
         <div style="font-size: 30px; font-weight: 700;">登録済カードなし</div>
@@ -14,16 +53,29 @@
   </div>
 </template>
 <script>
+import Card from '~/models/Card.model.js';
+
 import PointCard from '~/components/PointCard.vue';
+import QRCode from '~/components/QRCode.vue';
 
 export default {
   middleware: ['auth'],
-  components: {PointCard},
+  components: {PointCard, QRCode},
   data() {
     return {
       cards: [],
       masters: {},
       user: null,
+
+      qrShow: false,
+      qrData: '',
+      qrHelpText: null,
+
+      targetCardId: null,
+
+      showCardClickMenu: false,
+      cardClickMenuX: 0,
+      cardClickMenuY: 0
     }
   },
   beforeRouteEnter(to, from, next) {
@@ -40,6 +92,34 @@ export default {
         self.user = user;
       })();
     })
+  },
+  methods: {
+    onCardClick(e, card) {
+      this.targetCard = card;
+
+      const self = this;
+      self.showCardClickMenu = false;
+      
+      self.$nextTick(() => {
+        
+        self.cardClickMenuX = e.clientX;
+        self.cardClickMenuY = e.clientY;
+        
+        self.$nextTick(() => {
+          self.showCardClickMenu = true;
+        });
+      });
+    },
+    onReceivePointClick() {
+      this.qrData = JSON.stringify({
+        userId: this.user.userId,
+        cardId: this.targetCard.id
+      });
+      this.qrHelpText = 'このQRコードをポイントカード管理者に読み取ってもらってください'
+      this.$nextTick(() => {
+        this.qrShow = true;
+      });
+    }
   }
 }
 </script>

@@ -45,10 +45,17 @@
     <v-dialog v-model="pointIssueWindow" width="800">
       <div class="modal">
         <h1>ポイント付与</h1>
-          <UserSelect v-model="targetUser"></UserSelect>
-          <CardSelect v-model="opTgCardId" :user="targetUser" :masters="opTgMaster" :cards="filteredOpCdCards"></CardSelect>
-          <p v-if="targetUser == null" align="center">ユーザを選択してください</p>
-          <p v-if="targetUser != null && filteredOpCdCards.length == 0" align="center">選択できるカードがありません</p>
+          <v-row align="center">
+            <v-col cols="12" xs="12" md="">
+              <UserSelect v-model="targetUser"></UserSelect>
+              <CardSelect v-model="opTgCardId" :user="targetUser" :masters="opTgMaster" :cards="filteredOpCdCards"></CardSelect>
+              <p v-if="targetUser == null" align="center">ユーザを選択してください</p>
+              <p v-if="targetUser != null && filteredOpCdCards.length == 0" align="center">選択できるカードがありません</p>
+            </v-col>
+            <v-col cols="12" xs="12" md="auto" align="center">
+              <v-btn color="primary" @click="qrShow = true"><v-icon style="padding-right: 5px">mdi-qrcode-scan</v-icon>QRで指定</v-btn>
+            </v-col>
+          </v-row>
         <v-form v-model="pointIssueFormValid">
           <v-text-field
             label="付与量"
@@ -65,6 +72,8 @@
         </div>
       </div>
     </v-dialog>
+
+    <QRReadModal v-model="qrData" :show-window="qrShow" @modalVisiblityChange="qrShow = $event"></QRReadModal>
 
     <!-- カード登録リンクシェア用シート -->
     <social-share
@@ -166,10 +175,11 @@ import UserSelect from '~/components/UserSelect.vue';
 import CardSelect from '~/components/CardSelect.vue';
 import ColorPickField from '~/components/ColorPickField.vue';
 import SocialShare from '~/components/SocialShare.vue';
+import QRReadModal from '~/components/QRReaderModal.vue';
 
 export default {
   middleware: ['auth'],
-  components: {PointCard, UserSelect, CardSelect, ColorPickField, SocialShare},
+  components: {PointCard, UserSelect, CardSelect, ColorPickField, SocialShare, QRReadModal},
   data() {
     return {
       masters: [],
@@ -186,12 +196,15 @@ export default {
 
       //ポイント発行
       targetUser: null,
-      opTgUser: null,
       opCdCards: [],
       opTgCardId: null,
       opTgMasterId: null,
       opTgMaster: null,
       opPointAmount: null,
+
+      //QRリーダ
+      qrShow: false,
+      qrData: null,
 
       //カード登録リンクシェア
       socialShareSheet: false,
@@ -255,8 +268,34 @@ export default {
     })
   },
   watch: {
-    targetUser: function(newTargetUser) {
-      this.loadCards(newTargetUser);
+    targetUser: async function(newTargetUser) {
+      await this.loadCards(newTargetUser);
+      if (this.opTgCardId) {
+        let id = this.opTgCardId;
+        this.opTgCardId = null;
+        this.$nextTick(() => {
+          this.opTgCardId = id;
+        })
+      }
+    },
+    qrData: async function(newQrData) {
+      const self = this;
+      let opt = null;
+      try {
+        opt = JSON.parse(newQrData);
+      } catch (e) {
+        return;
+      }
+      if (!(opt.userId && opt.cardId)) return;
+
+      //カード
+      this.opTgCardId = opt.cardId;
+
+      //ユーザ
+      const users = await self.$userRepo.searchByUserId(opt.userId);
+      if (users.length > 0) {
+        self.targetUser = users[0];
+      }
     },
   },
   methods: {
@@ -303,15 +342,18 @@ export default {
       this.newMasterRegByUrl = true;
       this.masterAddResult = null;
       requestAnimationFrame(function () {
-        self.newMasterStyle = this.$cardMasterRepo.availableCardStyles[2];
+        self.newMasterStyle = self.$cardMasterRepo.availableCardStyles[2];
       });
     },
     masterClicked(masterId) {
       this.opTgMasterId = masterId;
     },
+    /**
+     * @param {{id: number}} targetUser
+     */
     async loadCards(targetUser) {
       const self = this;
-      this.opTgCardId = null;
+      // this.opTgCardId = null;
       if (targetUser) {
         const cards = await this.$cardMasterRepo.underControllCardOfUser(targetUser.id);
         const masters = {};

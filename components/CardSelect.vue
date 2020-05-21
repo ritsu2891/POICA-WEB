@@ -63,6 +63,11 @@ export default {
     changeSelect(id) {
       this.selectingCardId = id;
       this.$emit('input', id);
+    },
+  },
+  watch: {
+    value(newVal) {
+      this.selectingCardId = newVal;
     }
   }
 }
