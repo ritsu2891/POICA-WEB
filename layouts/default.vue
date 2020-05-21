@@ -195,7 +195,6 @@ export default {
         idCharType: val => /^\w+$/.test(val) || '英数字およびアンダーライン(_)のみ利用可能です',
         length: val => (typeof(val) == 'string' && val.length > 0 && val.length <= 30) || '1〜30字で指定してください',
         notEmpty: val => !!val,
-        notDupl: val => this.$userRepo.checkIdDupl(val) || 'このIDは既に利用されています'
       },
       userProfileRenewState: ReqState.BEFORE_REQUEST,
       lCheckUserIdDupl: id => {},
@@ -266,6 +265,9 @@ export default {
       self.userFetch().then(() => {
         self.showUserAuthMessage();
       });
+    });
+    this.$eventHub.$on('updateUserProfile', () => {
+      self.userFetch();
     });
     this.lCheckUserIdDupl = _.debounce(this.checkUserIdDupl, 500);
   },

@@ -36,7 +36,7 @@ export default {
         this.$cookies.remove(key);
       }
     },
-    messageArrived(event) {
+    async messageArrived(event) {
       if (event.origin != process.env.API_URL) {
         return;
       }
@@ -50,7 +50,11 @@ export default {
       this.$eventHub.$emit('loginStatusChange');
 
       const redirectUri = this.$cookies.get('RedirectURI');
-      if (redirectUri) {
+      const user = await this.$userRepo.myProfile();
+      console.log(user);
+      if (user && user.init) {
+        this.$router.push('/welcome');
+      } else if (redirectUri) {
         this.$router.push(redirectUri);
       }
     }
