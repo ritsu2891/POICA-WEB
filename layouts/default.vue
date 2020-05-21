@@ -207,7 +207,6 @@ export default {
     },
     async userFetch(showMessage) {
       this.userFetchState = ReqState.REQUESTING;
-      console.log(this.$userRepo);
       const user = await this.$userRepo.myProfile();
       if (user) {
         this.loggedIn = true;
@@ -264,8 +263,8 @@ export default {
       }
     },
     user(newUser) {
-      this.inputUserId = newUser.userId;
-      this.inputUserName = newUser.displayName;
+      this.inputUserId = newUser ? newUser.userId : null;
+      this.inputUserName = newUser ? newUser.displayName : null;
     }
   }
 }
