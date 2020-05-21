@@ -31,6 +31,11 @@
                 カード登録用リンクをシェア
               </v-list-item-title>
             </v-list-item>
+            <v-list-item @click="removeConfirmModalShow = true">
+              <v-list-item-title>
+                削除
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-col>
@@ -69,6 +74,19 @@
           <p v-if="pointIssueResult == true">付与しました</p>
           <p v-if="pointIssueResult == false">付与に失敗しました</p>
           <v-btn color="primary" :disabled="!canExecPointIssue" @click="submitPointIssue()">付与実行</v-btn>
+        </div>
+      </div>
+    </v-dialog>
+
+    <!-- 確認メッセージモーダル -->
+    <v-dialog :width="500" v-model="removeConfirmModalShow">
+      <div style="background: white; padding: 15px">
+        <v-alert type="warning" border="left" colored-border>
+          本当にカードを削除しますか？このカードを登録している全てのユーザのカードも同時に削除されます。この操作は取り消せません。
+        </v-alert>
+        <div align="right">
+          <v-btn @click="removeConfirmModalShow = false">キャンセル</v-btn>
+          <v-btn @click="onRemoveCardClickConfirmed" color="error">削除</v-btn>
         </div>
       </div>
     </v-dialog>
@@ -222,6 +240,8 @@ export default {
       newMasterTextColor: '#000000',
       newMasterShowInList: false,
       newMasterRegByUrl: true,
+
+      removeConfirmModalShow: false,
 
       rules: {
         required(value) {
@@ -402,6 +422,13 @@ export default {
           }
         });
       }
+    },
+    async onRemoveCardClickConfirmed() {
+      if (this.opTgMasterId) {
+        await this.$cardMasterRepo.remove(this.opTgMasterId);
+        this.fetchMasters();
+      }
+      this.removeConfirmModalShow = false;
     }
   }
 }

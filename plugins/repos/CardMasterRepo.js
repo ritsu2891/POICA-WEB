@@ -3,6 +3,7 @@ import CardMaster from '~/models/CardMaster.model.js';
 
 const endpoints = {
   add: 'cardmasters/add',
+  remove: 'cardmasters/remove',
   list: 'cardmasters/list',
   getById: 'cardmasters/byId',
   getByRegToken: 'cardmasters/byRegToken',
@@ -35,6 +36,9 @@ export default ({ app }, inject) => {
       const res = await app.$authorizedApi().post(endpoints.add, formData, headers);
       return res.data;
     }, 
+    remove: async function (masterId) {
+      return await app.$authorizedApi().post(endpoints.remove, {masterId: masterId});
+    },
     getById: async function (id) {
       const res = await app.$api().get(endpoints.getById, {
         params: {

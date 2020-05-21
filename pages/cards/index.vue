@@ -29,6 +29,11 @@
               ポイントを受け取る
             </v-list-item-title>
           </v-list-item>
+          <v-list-item @click="removeConfirmModalShow = true">
+            <v-list-item-title>
+              削除
+            </v-list-item-title>
+          </v-list-item>
         </v-list>
       </div>
     </v-menu>
@@ -41,6 +46,19 @@
           <v-alert type="info" v-if="qrHelpText" border="left" colored-border>
             {{qrHelpText}}
           </v-alert>
+        </div>
+      </div>
+    </v-dialog>
+
+    <!-- 確認メッセージモーダル -->
+    <v-dialog :width="500" v-model="removeConfirmModalShow">
+      <div style="background: white; padding: 15px">
+        <v-alert type="warning" border="left" colored-border>
+          本当にカードを削除しますか？この操作は取り消せません。
+        </v-alert>
+        <div align="right">
+          <v-btn @click="removeConfirmModalShow = false">キャンセル</v-btn>
+          <v-btn @click="onRemoveCardClickConfirmed" color="error">削除</v-btn>
         </div>
       </div>
     </v-dialog>
@@ -75,25 +93,28 @@ export default {
 
       showCardClickMenu: false,
       cardClickMenuX: 0,
-      cardClickMenuY: 0
+      cardClickMenuY: 0,
+
+      removeConfirmModalShow: false,
     }
   },
   beforeRouteEnter(to, from, next) {
     next(self => {
-      (async function() {
-        let res = await self.$cardRepo.getAll();
-        const cards = res.data.cards;
-        const masterIds = Array.from(new Set(cards.map(c => c.masterId)));
-        const masterFetchPromises = masterIds.map(id => self.$cardMasterRepo.getById(id));
-        const masters = await Promise.all(masterFetchPromises);
-        const user = await self.$userRepo.myProfile();
-        self.cards = cards;
-        self.masters = Object.fromEntries(masters.map(m => [m.id, m]));
-        self.user = user;
-      })();
+      self.fetchCards()
     })
   },
   methods: {
+    async fetchCards() {
+      let res = await this.$cardRepo.getAll();
+      const cards = res.data.cards;
+      const masterIds = Array.from(new Set(cards.map(c => c.masterId)));
+      const masterFetchPromises = masterIds.map(id => this.$cardMasterRepo.getById(id));
+      const masters = await Promise.all(masterFetchPromises);
+      const user = await this.$userRepo.myProfile();
+      this.cards = cards;
+      this.masters = Object.fromEntries(masters.map(m => [m.id, m]));
+      this.user = user;
+    },
     onCardClick(e, card) {
       this.targetCard = card;
 
@@ -119,6 +140,13 @@ export default {
       this.$nextTick(() => {
         this.qrShow = true;
       });
+    },
+    async onRemoveCardClickConfirmed() {
+      if (this.targetCard) {
+        await this.$cardRepo.remove(this.targetCard.id);
+        await this.fetchCards();
+      }
+      this.removeConfirmModalShow = false;
     }
   }
 }

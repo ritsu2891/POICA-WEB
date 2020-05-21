@@ -1,6 +1,7 @@
 const endpoints = {
   getall: 'cards/list',
   register: 'cards/add',
+  remove: 'cards/remove',
 }
 
 export default ({ app }, inject) => {
@@ -16,6 +17,9 @@ export default ({ app }, inject) => {
         });
         return result.data;
       } catch (e) {}
-    }
+    },
+    remove: async function (cardId) {
+      return await app.$authorizedApi().post(endpoints.remove, {cardId: cardId});
+    },
   });
 }
