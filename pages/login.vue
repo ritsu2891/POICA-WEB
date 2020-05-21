@@ -2,9 +2,9 @@
   <div class="d-flex justify-center align-center" style="height: 100%">
     <div class="pa-5" align="center">
       <v-icon style="font-size: 150px;">mdi-login</v-icon>
-      <h1 class="pb-2">ログインする</h1>
+      <h1 class="pb-2">ログイン・登録する</h1>
       <p v-if="authRequiredMessage"><b>要求された操作を実行するために、ログインが必要です。</b></p>
-      <p>現在は<b>Googleアカウント</b>によるログインのみご利用いただけます。</p>
+      <p>現在は<b>Googleアカウント</b>によるログイン・登録のみご利用いただけます。</p>
       <v-btn class="ma-2" tile color="primary" :loading="onAuthRequesting" @click="onGoogleLoginButtonClicked()">
         <v-icon left>mdi-google</v-icon> Googleでログイン
       </v-btn>

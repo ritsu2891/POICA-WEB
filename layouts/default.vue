@@ -44,7 +44,7 @@
           @click="loginBtnPushed"
           v-if="!loggedIn"
         >
-          ログイン
+          ログイン・登録
         </v-btn>
         <v-btn
           class="ml-2"
