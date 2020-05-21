@@ -2,7 +2,7 @@ const endpoints = {
   checkIdDupl: 'users/checkIdDupl',
   myProfile: 'users/myProfile',
   searchByDisplayName: 'users/byDisplayName',
-  searchByUserId: 'users/searchByUserId',
+  searchByUserId: 'users/ByUserId',
 }
 
 export default ({ app }, inject) => {
