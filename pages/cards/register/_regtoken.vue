@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%;">
     <div v-if="false">
       <v-progress-circular
         :size="80"
@@ -9,45 +9,50 @@
       ></v-progress-circular>
       <h1 class="pt-3">カードを追加しています...</h1>
     </div>
-    <div>
-      <h1>カードを追加</h1>
-      <div v-if="!master && masterLoadState != ReqState.REQUEST_FAILURE">
-        <p>カードの情報を取得しています...</p>
-        <v-progress-circular
-          :size="80"
-          :width="5"
-          color="primary"
-          indeterminate
-          class="pa-10"
-        ></v-progress-circular>
-      </div>
-      <div v-if="masterLoadState == ReqState.REQUEST_FAILURE">
-        <p>カードの情報の取得に失敗しました</p>
-      </div>
-      <div v-if="masterLoadState == ReqState.REQUEST_OK">
-        <p v-if="master.canUserRegister() && cardRegisterState == ReqState.BEFORE_REQUEST">
-          このカードを追加しますか？
-        </p>
-        <p v-if="cardRegisterState == ReqState.REQUESTING">
-          カードを追加しています...
-        </p>
-        <p v-if="cardRegisterState == ReqState.REQUEST_FAILURE">
-          カードを追加できませんでした
-        </p>
-        <p v-if="cardRegisterState == ReqState.REQUEST_OK">
-          カードを追加しました
-        </p>
-        <p v-if="!master.canUserRegister()">このカードは追加できません</p>
-        <PointCard class="my-3 elevation-5" :master="master" :user="user" style="width: 350px;">
-        </PointCard>
-        <v-btn
-          :disabled="!master.canUserRegister() || cardRegisterState == ReqState.REQUEST_OK"
-          :loading="cardRegisterState == ReqState.REQUESTING"
-          color="primary"
-          @click="requestCardReg()"
-        >
-          追加する
-        </v-btn>
+    <div class="d-flex align-center justify-center" style="height: 100%;">
+      <div align="center">
+        <h1>カードを追加</h1>
+        <div v-if="!master && masterLoadState != ReqState.REQUEST_FAILURE">
+          <p>カードの情報を取得しています...</p>
+          <v-progress-circular
+            :size="80"
+            :width="5"
+            color="primary"
+            indeterminate
+            class="pa-10"
+          ></v-progress-circular>
+        </div>
+        <div v-if="masterLoadState == ReqState.REQUEST_FAILURE">
+          <p>カードの情報の取得に失敗しました</p>
+        </div>
+        <div v-if="masterLoadState == ReqState.REQUEST_OK">
+          <p v-if="master && master.canUserRegister() && cardRegisterState == ReqState.BEFORE_REQUEST">
+            このカードを追加しますか？
+          </p>
+          <p v-if="cardRegisterState == ReqState.REQUESTING">
+            カードを追加しています...
+          </p>
+          <p v-if="cardRegisterState == ReqState.REQUEST_FAILURE">
+            カードを追加できませんでした
+          </p>
+          <p v-if="cardRegisterState == ReqState.REQUEST_OK">
+            カードを追加しました
+          </p>
+          <p v-if="!master.canUserRegister()">このカードは追加できません</p>
+          <PointCard class="my-3 elevation-5" v-if="master" :master="master" :user="user" style="width: 350px;">
+          </PointCard>
+          <v-btn
+            :disabled="!master.canUserRegister() || cardRegisterState == ReqState.REQUEST_OK"
+            :loading="cardRegisterState == ReqState.REQUESTING"
+            color="primary"
+            @click="requestCardReg()"
+          >
+            追加する
+          </v-btn><br>
+          <v-btn class="mt-2" color="primary" @click="$router.push('/cards')" v-if="cardRegisterState == ReqState.REQUEST_OK">
+            カード一覧へ
+          </v-btn>
+        </div>
       </div>
     </div>
   </div>
@@ -60,24 +65,28 @@ import CardMaster from '~/models/CardMaster.model.js';
 export default {
   // middleware: ['auth'],
   components: {PointCard},
-  layout: 'hvCenter',
   head() {
-    return {
-      meta: [
-        { hid: 'description', name: 'description', content: `POICA(α)で"${this.master ? this.master.displayName : ''}"を登録する` },
-        { hid: 'og:type', property: 'og:type', content: 'website' },
-        { hid: 'og:title', property: 'og:title', content: `"${this.master ? this.master.displayName : ''}"を登録する - POICA(α)` },
-        { hid: 'og:description', property: 'og:description', content: `POICA(α)で"${this.master ? this.master.displayName : ''}"を登録する` },
-        { hid: 'og:url', property: 'og:url', content: `${process.env.SELF_URL}${this.$router.currentRoute.fullPath}` },
-        { hid: 'og:image', property: 'og:image', content: `${process.env.API_URL}/uploads/master/cardimage/${this.master.regToken}.jpeg` },
-        { hid: 'twitter:card', property: 'twitter:card', content: 'summary_large_image' },
-      ],
+    if (this.master) {
+      return {
+        meta: [
+          { hid: 'description', name: 'description', content: `POICA(α)で"${this.master ? this.master.displayName : ''}"を登録する` },
+          { hid: 'og:type', property: 'og:type', content: 'website' },
+          { hid: 'og:title', property: 'og:title', content: `"${this.master ? this.master.displayName : ''}"を登録する - POICA(α)` },
+          { hid: 'og:description', property: 'og:description', content: `POICA(α)で"${this.master ? this.master.displayName : ''}"を登録する` },
+          { hid: 'og:url', property: 'og:url', content: `${process.env.SELF_URL}${this.$router.currentRoute.fullPath}` },
+          { hid: 'og:image', property: 'og:image', content: `${process.env.API_URL}/uploads/master/cardimage/${this.master.regToken}.jpeg` },
+          { hid: 'twitter:card', property: 'twitter:card', content: 'summary_large_image' },
+        ],
+      }
+    } else {
+      return {};
     }
+    
   },
   async asyncData(ctx) {
-    const regToken = ctx.params.regtoken;
+    const regToken = ctx.params ? ctx.params.regtoken : null;
     const user = await ctx.app.$currentUser();
-    const master = await ctx.app.$cardMasterRepo.getByRegToken(regToken);
+    const master = regToken ? await ctx.app.$cardMasterRepo.getByRegToken(regToken) : null;
     return { 
       regToken: regToken,
       user: user,
@@ -97,7 +106,7 @@ export default {
     }
   },
   created() {
-    this.master = new CardMaster(this.master);
+    this.master = this.master ? new CardMaster(this.master) : null;
   },
   methods: {
     async requestCardReg() {
