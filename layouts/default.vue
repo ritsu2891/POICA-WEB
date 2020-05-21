@@ -29,7 +29,9 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title class="pl-0">
+        <img src="/logo.png" style="height: 40px; padding-top: 3px;">
+      </v-toolbar-title>
       <v-spacer />
       <!-- ログイン・アバター -->
       <template v-if="userFetchState != ReqState.REQUESTING">
@@ -71,7 +73,7 @@
       </v-container>
     </v-content>
     <v-footer app>
-      <span>&copy; {{ new Date().getFullYear() }}</span>
+      <span>&copy; {{ new Date().getFullYear() }} Ritsuki KOKUBO (dev.rpaka)</span>
     </v-footer>
 
     <!-- ユーザプロフィールモーダル -->
@@ -157,17 +159,17 @@ export default {
       drawer: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
+          icon: 'mdi-door',
+          title: 'ようこそ',
           to: '/'
         },
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-credit-card-multiple',
           title: '利用しているカード',
           to: '/cards'
         },
         {
-          icon: 'mdi-apps',
+          icon: 'mdi-card-bulleted-settings',
           title: '管理しているカード',
           to: '/masters'
         }
