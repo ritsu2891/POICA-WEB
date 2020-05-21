@@ -62,7 +62,6 @@ export default {
       // });
       // this.size = newSize;
       this.width = this.$el.clientWidth;
-      console.log(this.$el.parentNode.clientHeight);
       this.height = this.fitHeight ? this.$el.parentNode.clientHeight : this.originalHeight * this.cardSizeRatio;
     }
   },
