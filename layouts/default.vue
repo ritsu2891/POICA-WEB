@@ -96,6 +96,7 @@
                 userProfileFieldRules.length,
                 userProfileFieldRules.idCharType,
               ]"
+              :error-messages="inputUserIdErrorMsgs"
             ></v-text-field>
             <v-text-field
               label="表示名"
@@ -146,6 +147,7 @@
 </template>
 
 <script>
+const _ = require('lodash');
 import * as ReqState from '~/utils/APIRequestState.js';
 
 export default {
@@ -188,12 +190,15 @@ export default {
       userProfileModalShow: false,
       inputUserId: null,
       inputUserName: null,
+      inputUserIdErrorMsgs: [],
       userProfileFieldRules: {
         idCharType: val => /^\w+$/.test(val) || '英数字およびアンダーライン(_)のみ利用可能です',
         length: val => (typeof(val) == 'string' && val.length > 0 && val.length <= 30) || '1〜30字で指定してください',
         notEmpty: val => !!val,
+        notDupl: val => this.$userRepo.checkIdDupl(val) || 'このIDは既に利用されています'
       },
       userProfileRenewState: ReqState.BEFORE_REQUEST,
+      lCheckUserIdDupl: id => {},
     }
   },
   methods: {
@@ -245,6 +250,13 @@ export default {
         };
         this.snackbarShow = true;
       }
+    },
+    async checkUserIdDupl(id) {
+      if (await this.$userRepo.checkIdDupl(id)) {
+        this.inputUserIdErrorMsgs = ['このIDは既に利用されています'];
+      } else {
+        this.inputUserIdErrorMsgs = [];
+      }
     }
   },
   mounted() {
@@ -255,6 +267,7 @@ export default {
         self.showUserAuthMessage();
       });
     });
+    this.lCheckUserIdDupl = _.debounce(this.checkUserIdDupl, 500);
   },
   watch: {
     userProfileModalShow(show) {
@@ -265,6 +278,11 @@ export default {
     user(newUser) {
       this.inputUserId = newUser ? newUser.userId : null;
       this.inputUserName = newUser ? newUser.displayName : null;
+    },
+    inputUserId(newInputUserId) {
+      if (newInputUserId) {
+        this.lCheckUserIdDupl(newInputUserId);
+      }
     }
   }
 }

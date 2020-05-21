@@ -8,7 +8,7 @@ const endpoints = {
 export default ({ app }, inject) => {
   inject('userRepo', {
     checkIdDupl: async function (userId) {
-      const res = await app.$api().post(endpoints.checkIdDupl, {
+      const res = await app.$authorizedApi().post(endpoints.checkIdDupl, {
         userId: userId
       });
       const data = res.data;
