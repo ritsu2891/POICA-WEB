@@ -111,8 +111,9 @@ export default {
       const masterFetchPromises = masterIds.map(id => this.$cardMasterRepo.getById(id));
       const masters = await Promise.all(masterFetchPromises);
       const user = await this.$userRepo.myProfile();
-      this.cards = cards;
-      this.masters = Object.fromEntries(masters.map(m => [m.id, m]));
+
+      this.masters = Object.fromEntries(masters.filter(m => !!m).map(m => [m.id, m]));
+      this.cards = cards.filter(c => Object.keys(this.masters).map(id => parseInt(id)).includes(c.masterId));
       this.user = user;
     },
     onCardClick(e, card) {
