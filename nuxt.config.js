@@ -3,8 +3,6 @@ import colors from 'vuetify/es5/util/colors';
 const appName = 'POICA(α)';
 const appUrl = process.env.SELF_URL;
 
-require('dotenv').config();
-
 export default {
   /*
   ** Headers of the page
@@ -53,6 +51,7 @@ export default {
   */
   buildModules: [
     '@nuxtjs/vuetify',
+    '@nuxtjs/dotenv',
   ],
   /*
   ** Nuxt.js modules
