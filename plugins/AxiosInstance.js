@@ -19,6 +19,8 @@ function api() {
 };
 
 function authorizedApi(accessToken) {
+  console.log('aaaaaa');
+  console.log(process.env.API_URL);
   if (accessToken) {
     return axios.create(_.merge(baseOptions, {
       headers: {
