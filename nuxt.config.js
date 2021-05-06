@@ -7,7 +7,6 @@ export default {
   /*
   ** Headers of the page
   */
-  target: 'static',
   head: {
     titleTemplate: 'POICA',
     title: process.env.npm_package_name || '',
