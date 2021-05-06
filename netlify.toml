@@ -1,3 +1,4 @@
 [build]
   publish = "dist/"
-  command = "npm run generate" 
+  command = "npm run generate"
+  environment = { NODE_ENV = "production" }
