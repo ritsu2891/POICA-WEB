@@ -1,10 +1,9 @@
 import colors from 'vuetify/es5/util/colors';
 
 const appName = 'POICA(α)';
-const appUrl = 'http://localhost:3000';
+const appUrl = process.env.SELF_URL;
 
 export default {
-  mode: 'universal',
   /*
   ** Headers of the page
   */
@@ -97,7 +96,14 @@ export default {
     /*
     ** You can extend webpack config here
     */
+    babel:{
+      plugins: [
+        ['@babel/plugin-proposal-private-methods', { loose: true }]
+      ]
+    }
+    /*
     extend (config, ctx) {
     }
+    */
   }
 }

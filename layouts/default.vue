@@ -24,19 +24,20 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      :clipped-left="clipped"
-      app
-    >
+    <v-app-bar :clipped-left="clipped" app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title class="pl-0">
-        <img src="/logo.png" style="height: 40px; padding-top: 3px;">
+        <img src="/logo.png" style="height: 40px; padding-top: 3px" />
       </v-toolbar-title>
       <v-spacer />
       <!-- ログイン・アバター -->
       <template v-if="userFetchState != ReqState.REQUESTING">
-        <v-avatar v-if="user && user.iconUrl" v-ripple @click="userProfileModalShow=true">
-          <img :src="user.iconUrl">
+        <v-avatar
+          v-if="user && user.iconUrl"
+          v-ripple
+          @click="userProfileModalShow = true"
+        >
+          <img :src="user.iconUrl" />
         </v-avatar>
         <v-btn
           class="ml-2"
@@ -67,18 +68,20 @@
       </template>
       <!-- ///////////// -->
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-container style="height: 100%">
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
     <v-footer app>
-      <span>&copy; {{ new Date().getFullYear() }} Ritsuki KOKUBO (dev.rpaka)</span>
+      <span
+        >&copy; {{ new Date().getFullYear() }} Ritsuki KOKUBO (dev.rpaka)</span
+      >
     </v-footer>
 
     <!-- ユーザプロフィールモーダル -->
     <v-dialog v-model="userProfileModalShow" width="500">
-      <div style="background: white; padding: 15px;">
+      <div style="background: white; padding: 15px">
         <h1>プロフィール</h1>
         <v-alert type="info">
           プロフィール画像はGoogleのものを用いています。将来的にはこのサービス用の画像を別途指定できるようにする予定です。
@@ -86,7 +89,7 @@
 
         <div class="d-flex align-center">
           <v-avatar size="100" v-if="user && user.iconUrl" class="ma-3">
-            <img :src="user.iconUrl">
+            <img :src="user.iconUrl" />
           </v-avatar>
 
           <v-form v-model="userProfileValidate" class="flex-grow-1">
@@ -110,9 +113,16 @@
             ></v-text-field>
           </v-form>
         </div>
-        
-        <div align="right" v-if="userProfileRenewState == ReqState.REQUEST_OK">更新しました</div>
-        <div align="right" v-if="userProfileRenewState == ReqState.REQUEST_FAILURE">更新できませんでした</div>
+
+        <div align="right" v-if="userProfileRenewState == ReqState.REQUEST_OK">
+          更新しました
+        </div>
+        <div
+          align="right"
+          v-if="userProfileRenewState == ReqState.REQUEST_FAILURE"
+        >
+          更新できませんでした
+        </div>
         <div align="right">
           <v-btn color="error" @click="userProfileModalShow = false">
             キャンセル
@@ -137,53 +147,47 @@
       bottom
     >
       {{ snackbar.text }}
-      <v-btn
-        dark
-        text
-        @click="snackbarShow = false"
-      >
-        閉じる
-      </v-btn>
+      <v-btn dark text @click="snackbarShow = false"> 閉じる </v-btn>
     </v-snackbar>
   </v-app>
 </template>
 
 <script>
-const _ = require('lodash');
-import * as ReqState from '~/utils/APIRequestState.js';
+const _ = require("lodash");
+import * as ReqState from "~/utils/APIRequestState.js";
 
 export default {
-  data () {
+  data() {
     return {
       clipped: true,
       drawer: false,
       items: [
         {
-          icon: 'mdi-door',
-          title: 'ようこそ',
-          to: '/'
+          icon: "mdi-door",
+          title: "ようこそ",
+          to: "/",
         },
         {
-          icon: 'mdi-credit-card-multiple',
-          title: '利用しているカード',
-          to: '/cards'
+          icon: "mdi-credit-card-multiple",
+          title: "利用しているカード",
+          to: "/cards",
         },
         {
-          icon: 'mdi-card-bulleted-settings',
-          title: '管理しているカード',
-          to: '/masters'
-        }
+          icon: "mdi-card-bulleted-settings",
+          title: "管理しているカード",
+          to: "/masters",
+        },
       ],
       miniVariant: false,
-      title: 'POICA',
+      title: "POICA",
       loggedIn: false,
       user: null,
       userFetchState: ReqState.BEFORE_REQUEST,
       ReqState: ReqState,
       snackbarShow: false,
       snackbar: {
-        color: 'primary',
-        text: '',
+        color: "primary",
+        text: "",
         timeout: 5000,
       },
 
@@ -194,22 +198,25 @@ export default {
       inputUserName: null,
       inputUserIdErrorMsgs: [],
       userProfileFieldRules: {
-        idCharType: val => /^\w+$/.test(val) || '英数字およびアンダーライン(_)のみ利用可能です',
-        length: val => (typeof(val) == 'string' && val.length > 0 && val.length <= 30) || '1〜30字で指定してください',
-        notEmpty: val => !!val,
+        idCharType: (val) =>
+          /^\w+$/.test(val) || "英数字およびアンダーライン(_)のみ利用可能です",
+        length: (val) =>
+          (typeof val == "string" && val.length > 0 && val.length <= 30) ||
+          "1〜30字で指定してください",
+        notEmpty: (val) => !!val,
       },
       userProfileRenewState: ReqState.BEFORE_REQUEST,
-      lCheckUserIdDupl: id => {},
-    }
+      lCheckUserIdDupl: (id) => {},
+    };
   },
   methods: {
     loginBtnPushed() {
-      this.$cookies.set('RedirectURI', this.$route.path)
-      this.$router.push('/login');
+      this.$cookies.set("RedirectURI", this.$route.path);
+      this.$router.push("/login");
     },
     logoutBtnPushed() {
-      this.$cookies.set('RedirectURI', this.$route.path)
-      this.$router.push('/logout');
+      this.$cookies.set("RedirectURI", this.$route.path);
+      this.$router.push("/logout");
     },
     async userFetch(showMessage) {
       this.userFetchState = ReqState.REQUESTING;
@@ -238,15 +245,15 @@ export default {
     showUserAuthMessage() {
       if (this.user) {
         this.snackbar = {
-          color: 'success',
-          text: 'ログインしました',
+          color: "success",
+          text: "ログインしました",
           timeout: 5000,
         };
         this.snackbarShow = true;
       } else {
         this.snackbar = {
-          color: 'info',
-          text: 'ログアウトしました',
+          color: "info",
+          text: "ログアウトしました",
           timeout: 5000,
         };
         this.snackbarShow = true;
@@ -254,21 +261,21 @@ export default {
     },
     async checkUserIdDupl(id) {
       if (await this.$userRepo.checkIdDupl(id)) {
-        this.inputUserIdErrorMsgs = ['このIDは既に利用されています'];
+        this.inputUserIdErrorMsgs = ["このIDは既に利用されています"];
       } else {
         this.inputUserIdErrorMsgs = [];
       }
-    }
+    },
   },
   mounted() {
     const self = this;
     this.userFetch();
-    this.$eventHub.$on('loginStatusChange', () => {
+    this.$eventHub.$on("loginStatusChange", () => {
       self.userFetch().then(() => {
         self.showUserAuthMessage();
       });
     });
-    this.$eventHub.$on('updateUserProfile', () => {
+    this.$eventHub.$on("updateUserProfile", () => {
       self.userFetch();
     });
     this.lCheckUserIdDupl = _.debounce(this.checkUserIdDupl, 500);
@@ -287,7 +294,7 @@ export default {
       if (newInputUserId) {
         this.lCheckUserIdDupl(newInputUserId);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
