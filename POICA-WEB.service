@@ -1,0 +1,12 @@
+[Unit]
+Description=POICA-WEB: POICA WEB Service
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=zsh /home/ubuntu/paka-apps/POICA-WEB/run.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
