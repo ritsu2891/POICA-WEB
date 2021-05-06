@@ -2,7 +2,7 @@ const axios = require('axios');
 const _ = require('lodash');
 
 const baseOptions = {
-  baseURL: `http://${process.env.API_FQDN}`,
+  baseURL: process.env.API_URL,
   timeout: 30000,
   validateStatus: function (status) {
     return status < 500;
