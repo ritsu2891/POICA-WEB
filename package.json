@@ -9,8 +9,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "test": "jest",
-    "deploy": "aws s3 sync ./dist s3://poica-front/"
+    "test": "jest"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.1",
